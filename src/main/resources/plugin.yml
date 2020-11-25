@@ -1,0 +1,13 @@
+name: TreasureHunt
+version: @version@
+main: me.baryonyx.treasurehunt.TreasureHunt
+api-version: 1.16
+prefix: TreasureHunt
+authors: [Jerm1812]
+description: A plugin that allows players to find admin defined treasures (blocks) that have rewards
+commands:
+  treasurehunt:
+    usage: /th
+    description: Puts the user in edit mode or takes them out
+    permission: treasurehunt.admin
+    aliases: [th]

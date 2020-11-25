@@ -1,0 +1,4 @@
+found-block-message: "You found a treasure!"
+
+# format dd:hh:mm
+block-find-delay: "01:00:00"
