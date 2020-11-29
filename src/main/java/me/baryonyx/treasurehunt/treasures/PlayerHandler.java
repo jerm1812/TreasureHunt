@@ -1,8 +1,11 @@
 package me.baryonyx.treasurehunt.treasures;
 
 import me.baryonyx.treasurehunt.configuration.Config;
+import me.baryonyx.treasurehunt.utils.TimeConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -132,5 +135,51 @@ public class PlayerHandler {
 
         treasure.commands.add(command);
         editTreasure(player, treasure.location);
+    }
+
+    public void registerFoundTreasure(Player player, Location location) {
+        YamlConfiguration playerFile = config.loadPlayerFile(player);
+
+        String convertedLocation = config.convertLocation(location);
+
+        if (playerFile.isSet(convertedLocation)) {
+            long time = playerFile.getLong(convertedLocation) - System.currentTimeMillis() / 1000;
+            player.sendMessage("is set " + time);
+
+            if (time > 0) {
+                player.sendMessage("You have already found this treasure! Please wait " + TimeConverter.convertMillisecondsToTime(time));
+                return;
+            }
+        }
+
+        givePlayerTreasureRewards(player, location);
+        config.setFoundTreasureToPlayer(player, location);
+        player.sendMessage("You found a treasure!");
+    }
+
+    private void givePlayerTreasureRewards(Player player, Location location) {
+        Treasure treasure = config.getTreasure(location);
+
+        if (treasure == null) {
+            return;
+        }
+
+        if (!treasure.items.isEmpty()) {
+            for (ItemStack item : treasure.items) {
+                if (player.getInventory().firstEmpty() != -1) {
+                    player.getInventory().addItem(item);
+                } else {
+                    player.getWorld().dropItemNaturally(player.getLocation(), item);
+                }
+            }
+        }
+
+        if (!treasure.commands.isEmpty()) {
+            for (String command : treasure.commands) {
+                ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
+                command = command.replace("%player%", player.getName()).substring(1);
+                Bukkit.dispatchCommand(console, command);
+            }
+        }
     }
 }

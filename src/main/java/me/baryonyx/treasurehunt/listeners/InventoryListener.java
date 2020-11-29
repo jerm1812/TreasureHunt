@@ -69,8 +69,8 @@ public class InventoryListener implements Listener {
         }
         else if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY && playerHandler.hasInventory(event.getInventory())) {
             if (event.getView().getTopInventory().firstEmpty() < 9) {
-                    playerHandler.addItemToTreasure(event.getWhoClicked().getUniqueId(), event.getCurrentItem());
-                    return;
+                playerHandler.addItemToTreasure(event.getWhoClicked().getUniqueId(), event.getCurrentItem());
+                return;
             }
 
             event.setCancelled(true);

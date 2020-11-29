@@ -70,7 +70,7 @@ public class Config {
         saveTreasureFile();
     }
 
-    private String convertLocation(@NotNull Location location) {
+    public String convertLocation(@NotNull Location location) {
         return location.getWorld().getName() + ".x" + location.getBlockX() + "y" + location.getBlockY() + "z" + location.getBlockZ();
     }
 
@@ -85,7 +85,6 @@ public class Config {
 
     private void createPlayerFile(@NotNull Player player) {
         YamlConfiguration playerYaml = new YamlConfiguration();
-        playerYaml.createSection("treasureFile-found");
         savePlayerFile(player, playerYaml);
     }
 
@@ -99,7 +98,7 @@ public class Config {
     }
 
     @NotNull
-    private YamlConfiguration loadPlayerFile(@NotNull Player player) {
+    public YamlConfiguration loadPlayerFile(@NotNull Player player) {
         File file = new File(plugin.getDataFolder(), "playerdata" + File.separator + player.getUniqueId() + ".yml");
 
         if (!file.exists()) {
@@ -109,11 +108,9 @@ public class Config {
         return YamlConfiguration.loadConfiguration(file);
     }
 
-    public void setFoundTreasureToPlayer(@NotNull Player player, @NotNull Block block) {
+    public void setFoundTreasureToPlayer(@NotNull Player player, @NotNull Location location) {
         YamlConfiguration playerFile = loadPlayerFile(player);
-        ConfigurationSection section = playerFile.getConfigurationSection("treasureFile-found");
-        section.set(block.getLocation().toString() + ".block", block.getType().toString());
-        section.set(block.getLocation().toString() + ".time", System.currentTimeMillis() / 1000 + TimeConverter.convertTimeToSeconds(config.getString("block-find-delay")));
+        playerFile.set(convertLocation(location), System.currentTimeMillis() / 1000 + TimeConverter.convertTimeToSeconds(config.getString("block-find-delay")));
         savePlayerFile(player, playerFile);
     }
 }
